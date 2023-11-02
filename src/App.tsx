@@ -1,13 +1,13 @@
-import { z } from "zod";
+import { number, z } from "zod";
 import { useForm } from "react-hook-form";
 import "./style.css";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { DevTool } from "@hookform/devtools";
 
 export default function App() {
   // const [fname, setFName] = useState(z.string().parse(""));
   // const [lname, setLName] = useState(z.string().parse(""));
-  const [password, setPassword] = useState(z.string().parse(""));
+  // const [password, setPassword] = useState(z.string().parse(""));
   // const [confirmPassword, setConfirmPassword] = useState(z.string().parse(""));
   // const [email, setEmail] = useState(z.string().parse(""));
   // const [pesel, setPesel] = useState(z.string().parse("0"));
@@ -21,9 +21,20 @@ export default function App() {
     pesel: number;
   };
 
-  const form = useForm<FormValues>();
-  const { register, control, handleSubmit, formState } = form;
+  const form = useForm<FormValues>({
+    defaultValues: {
+      fname: "",
+      lname: "",
+      password: "",
+      confirmpassword: "",
+      email: "",
+    },
+  });
+  const { register, control, handleSubmit, formState, watch } = form;
   const { errors } = formState;
+
+  const password = useRef({});
+  password.current = watch("password", "");
 
   const onSubmit = (data: FormValues) => {
     console.log("Form submitted", data);
@@ -69,7 +80,9 @@ export default function App() {
           id="confirmpassword"
           placeholder="Powtórz hasło"
           {...register("confirmpassword", {
-            required: "Potwierdzone hasło jest wymagane",
+            required: "Powtórzenie hasła jest wymagane",
+            validate: (value) =>
+              value === password.current || "Hasła się nie zgadzają",
           })}
         />
         <p>{errors.confirmpassword?.message}</p>
@@ -92,6 +105,10 @@ export default function App() {
           placeholder="Pesel"
           {...register("pesel", {
             required: "Pesel jest wymagany",
+            pattern: {
+              value: /^[0-9]+$/,
+              message: "Pesel składa się z samych liczb",
+            },
             minLength: {
               value: 11,
               message: "Pesel musi być długi na 11 znaków",
@@ -100,7 +117,6 @@ export default function App() {
               value: 11,
               message: "Pesel musi być długi na 11 znaków",
             },
-            valueAsNumber: true,
           })}
         />
         <p>{errors.pesel?.message}</p>
@@ -110,3 +126,5 @@ export default function App() {
     </div>
   );
 }
+
+// naprawic animacje przyciska
