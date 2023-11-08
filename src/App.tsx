@@ -1,17 +1,9 @@
-import { number, z } from "zod";
 import { useForm } from "react-hook-form";
 import "./style.css";
 import { useRef, useState } from "react";
 import { DevTool } from "@hookform/devtools";
 
 export default function App() {
-  // const [fname, setFName] = useState(z.string().parse(""));
-  // const [lname, setLName] = useState(z.string().parse(""));
-  // const [password, setPassword] = useState(z.string().parse(""));
-  // const [confirmPassword, setConfirmPassword] = useState(z.string().parse(""));
-  // const [email, setEmail] = useState(z.string().parse(""));
-  // const [pesel, setPesel] = useState(z.string().parse("0"));
-
   type FormValues = {
     fname: string;
     lname: string;
@@ -28,10 +20,17 @@ export default function App() {
       password: "",
       confirmpassword: "",
       email: "",
+      pesel: 0,
     },
   });
-  const { register, control, handleSubmit, formState, watch } = form;
+  const { register, control, handleSubmit, formState, watch, getValues } = form;
   const { errors } = formState;
+
+  // const userFirstName = watch("fname");
+  // const userLastName = watch("lname");
+  // const userPassword = watch("password");
+  // const userEmail = watch("email");
+  // const userPesel = watch("pesel");
 
   const password = useRef({});
   password.current = watch("password", "");
@@ -39,6 +38,8 @@ export default function App() {
   const onSubmit = (data: FormValues) => {
     console.log("Form submitted", data);
   };
+
+  // const handleGetValues = () => {};
 
   return (
     <div className="main-flex">
@@ -100,14 +101,13 @@ export default function App() {
         />
         <p>{errors.email?.message}</p>
         <input
-          type="text"
+          type="number"
           id="pesel"
           placeholder="Pesel"
           {...register("pesel", {
-            required: "Pesel jest wymagany",
-            pattern: {
-              value: /^[0-9]+$/,
-              message: "Pesel składa się z samych liczb",
+            required: {
+              value: true,
+              message: "Pesel jest wymagany",
             },
             minLength: {
               value: 11,
@@ -117,14 +117,14 @@ export default function App() {
               value: 11,
               message: "Pesel musi być długi na 11 znaków",
             },
+
+            valueAsNumber: true,
           })}
         />
         <p>{errors.pesel?.message}</p>
-        <button>Confirm</button>
+        <button type="button" /* onClick={handleGetValues} */>Confirm</button>
       </form>
       <DevTool control={control} />
     </div>
   );
 }
-
-// naprawic animacje przyciska
